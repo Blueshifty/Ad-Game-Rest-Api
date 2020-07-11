@@ -25,7 +25,7 @@ SECRET_KEY = 'e-h73$u8s3x_#$_d4bq_n5lp6*m#m!%ht*w0avr4u=qc)^h@%^'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*'] #Şimdilik
 
 
 # Application definition
@@ -122,8 +122,9 @@ WSGI_APPLICATION = 'ad_game.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
+
 DATABASES = {
-    'default':{
+    'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'ad_game',
         'USER': 'zoso',

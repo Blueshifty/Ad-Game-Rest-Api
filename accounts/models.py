@@ -2,26 +2,30 @@ import uuid
 from django.db import models
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
 from phonenumber_field.modelfields import PhoneNumberField
-from datetime import datetime
 
 
 class UserManager(BaseUserManager):
-    def create_user(self, user_name, email, password=None):
+    def create_user(self, user_name, email, first_name, last_name, date_of_birth, sex, profession, phone_number, password=None):
         if not user_name:
             raise ValueError('Users Must Have an User Name')
 
         user = self.model(
             user_name=user_name,
             email=email,
+            first_name=first_name,
+            last_name=last_name,
+            date_of_birth=date_of_birth,
+            sex=sex,
+            profession=profession,
+            phone_number=phone_number
         )
         user.set_password(password)
-        user.save(using=self.db)
+        user.save(using=self._db)
         return user
 
     def create_superuser(self, email, password):
-        if password in None:
+        if password is None:
             raise TypeError('Superusers must have a password.')
-
         user = self.create_user(email, password)
         user.is_superuser = True
         user.is_staff = True
@@ -51,11 +55,11 @@ class User(AbstractBaseUser):
 
     first_name = models.CharField(null=False, blank=False, max_length=25)
     last_name = models.CharField(null=False, blank=False, max_length=25)
-    join_date = models.DateTimeField(default=datetime.now())
+    join_date = models.DateTimeField(auto_now_add=True)
     profession = models.CharField(null=False, blank=False, max_length=50)
     sex = models.CharField(max_length=1, choices=SEX_CHOICES)
     phone_number = PhoneNumberField(blank=True, null=True)
-
+    date_of_birth = models.DateField(null=False, blank=False)
     USERNAME_FIELD = 'user_name'
     REQUIRED_FIELDS = []
 
