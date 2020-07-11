@@ -16,11 +16,15 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         user = User.objects.create_user(**validated_data)
         return user
 
+class UserUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('email', 'first_name', 'last_name', 'sex', 'phone_number', 'date_of_birth', 'profession', 'avatar')
+
 
 class UserLoginSerializer(serializers.Serializer):
     user_name = serializers.CharField(max_length=255)
     password = serializers.CharField(max_length=128, write_only=True)
-    # token = serializers.CharField(max_length=255, read_only=True)
     refresh = serializers.CharField(max_length=255, read_only=True)
     access = serializers.CharField(max_length=255, read_only=True)
 
@@ -34,8 +38,6 @@ class UserLoginSerializer(serializers.Serializer):
             )
         try:
             refresh = RefreshToken.for_user(user)
-            # payload = api_settings.JWT_PAYLOAD_HANDLER(user)
-            # jwt_token = api_settings.JWT_ENCODE_HANDLER(payload)
             update_last_login(None, user)
         except User.DoesNotExist:
             raise serializers.ValidationError(

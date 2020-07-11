@@ -2,7 +2,9 @@ from rest_framework import status
 from rest_framework.generics import CreateAPIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
-from .serializers import UserLoginSerializer, UserRegistrationSerializer
+from rest_framework.views import APIView
+from .serializers import UserLoginSerializer, UserRegistrationSerializer, UserUpdateSerializer
+from .models import User
 
 
 class UserRegistrationView(CreateAPIView):
@@ -40,3 +42,30 @@ class UserLoginView(CreateAPIView):
         }
 
         return Response(response, status=status_code)
+
+
+class UserUpdateView(CreateAPIView):
+    serializer_class = UserUpdateSerializer
+    permission_classes = ()
+
+    def get(self, request):
+        serializer = self.serializer_class(User.objects.all()[1])
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def put(self, request):
+        serializer = self.serializer_class(User.objects.all()[1], data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
+
+
+class AuthTest(APIView):
+    permission_classes = (IsAuthenticated)
+
+    def get(self, request):
+        return Response(status=status.HTTP_200_OK, data={
+            'user_id': request.user.id,
+            'user_name': request.user.user_name,
+            'name': request.user.first_name + " " + request.user.last_name,
+        })
