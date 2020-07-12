@@ -45,7 +45,8 @@ INSTALLED_APPS = [
     'phonenumber_field',
     ''
     # --- My Apps --- #
-    'accounts'
+    'accounts',
+    'core',
 ]
 
 AUTH_USER_MODEL = 'accounts.User'
@@ -118,10 +119,11 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'ad_game.wsgi.application'
 
+REDIS_HOST = 'localhost'
+REDIS_PORT = '6379'
 
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
-
 
 DATABASES = {
     'default': {

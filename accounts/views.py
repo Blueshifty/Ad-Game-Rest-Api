@@ -46,14 +46,14 @@ class UserLoginView(CreateAPIView):
 
 class UserUpdateView(CreateAPIView):
     serializer_class = UserUpdateSerializer
-    permission_classes = ()
+    permission_classes = (IsAuthenticated,)
 
     def get(self, request):
-        serializer = self.serializer_class(User.objects.all()[1])
+        serializer = self.serializer_class(request.user)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def put(self, request):
-        serializer = self.serializer_class(User.objects.all()[1], data=request.data)
+        serializer = self.serializer_class(request.user, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
@@ -61,7 +61,7 @@ class UserUpdateView(CreateAPIView):
 
 
 class AuthTest(APIView):
-    permission_classes = (IsAuthenticated)
+    permission_classes = (IsAuthenticated,)
 
     def get(self, request):
         return Response(status=status.HTTP_200_OK, data={
