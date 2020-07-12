@@ -10,6 +10,7 @@ class Game(models.Model):
     )
 
     winner = models.ForeignKey(User, on_delete=models.PROTECT, null=True, blank=True)
+    winner_point = models.IntegerField(null=True, blank=True)
     date = models.DateField(auto_now_add=True)
     total_point = models.IntegerField(null=True, blank=True)
     prize = models.IntegerField(null=True, blank=True)

@@ -45,11 +45,14 @@ def start_lotto():
         counter += redis_instance.get(key)
         if counter >= lucky_number:
             winner = key
+            winner_point = redis_instance.get(key)
             break
     try:
+        game.total_point = total_score
+        game.winner_point = winner_point
         game.winner = User.objects.get(id=uuid.UUID(winner))
         game.game_state = 'E'
-        # game.save()
+        game.save()
         print(game.winner)
     except User.DoesNotExist:
         raise Exception('WINNER ID IS NOT IN DATABASE, SOMETHING WENT WRONG')
