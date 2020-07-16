@@ -6,25 +6,29 @@ from django.conf import settings
 from accounts.models import User
 from .models import Game
 from .decorators import print_execution_time
+from celery import shared_task
 
 redis_instance = redis.StrictRedis(host=settings.REDIS_HOST, port=settings.REDIS_PORT, db=0, decode_responses=True)
 redis_instance.set_response_callback('GET', int)  # GET VALUES AS INT
 set_name = "Point-Table"
 
 
+@shared_task
 @print_execution_time
-def create_game():
+def create_game(add_users=False):
     redis_instance.flushdb()
     new_game = Game.objects.create(game_state='S')
-    users = User.objects.filter(is_superuser=False, is_active=True, is_staff=False)
-    for user in users:
-        # Save 22 Byte Per Value If You Use Bytes
-        # But Harder To Decode Test And Find Out The Best
-        redis_instance.zadd(set_name, {str(user.id): 0})
-        # redis_instance.set(str(user.id), 0)
+    if add_users:
+        users = User.objects.filter(is_superuser=False, is_active=True, is_staff=False)
+        for user in users:
+            # Save 22 Byte Per Value If You Use Bytes
+            # But Harder To Decode Test And Find Out The Best
+            redis_instance.zadd(set_name, {str(user.id): 0})
+            # redis_instance.set(str(user.id), 0)
     new_game.save()
 
 
+@shared_task
 @print_execution_time
 def start_lotto():
     total_score = counter = 0
@@ -58,6 +62,7 @@ def start_lotto():
         raise Exception('WINNER ID IS NOT IN DATABASE, SOMETHING WENT WRONG')
 
 
+@shared_task
 @print_execution_time
 def get_redis_values():
     for key in redis_instance.keys('*'):
@@ -65,6 +70,7 @@ def get_redis_values():
         # print(f'User:{User.objects.get(id=key)} Point: {redis_instance.get(key)}')
 
 
+@shared_task
 @print_execution_time
 def get_leader_board():
     for value in redis_instance.zrange(set_name, 0, -1, withscores=True, desc=True):
@@ -79,6 +85,7 @@ def get_leader_board():
     '''
 
 
+@shared_task
 @print_execution_time
 def randomize_redis_values():
     users = User.objects.filter(is_superuser=False, is_active=True, is_staff=False)
@@ -95,3 +102,9 @@ def randomize_redis_values():
         # print(type(redis_instance.get(key)))
         # redis_instance.set(key, int(redis_instance.get(key)) + 1)
     '''
+
+
+@shared_task
+@print_execution_time
+def increment_user_point(user_id):
+    redis_instance.zincrby(set_name, 1, str(user_id))

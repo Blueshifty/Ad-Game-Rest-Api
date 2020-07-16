@@ -6,6 +6,7 @@ from django.conf import settings
 from .models import Game
 from rest_framework.permissions import IsAuthenticated
 from accounts.models import User
+from .game_logic import increment_user_point, create_game, randomize_redis_values, get_redis_values, start_lotto
 
 redis_instance = redis.StrictRedis(host=settings.REDIS_HOST, port=settings.REDIS_PORT, db=0, decode_responses=True)
 redis_instance.set_response_callback('GET', int)  # GET VALUES AS INT
@@ -38,13 +39,12 @@ def leader_board(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def add_point(request):
-    redis_instance.zincrby(set_name, 1, str(request.user.id))
-    return Response(
-        data={
-            "score": int(redis_instance.zscore(set_name, str(request.user.id))),
-            "rank": redis_instance.zrevrank(set_name, str(request.user.id)) + 1,
-        }
-    )
+    #create_game.delay(add_users=True)
+    #randomize_redis_values.delay()
+    #start_lotto.delay()
+    increment_user_point.delay(request.user.id)
+    # redis_instance.zincrby(set_name, 1, str(request.user.id))
+    return Response(status=status.HTTP_200_OK)
 
 
 @api_view(['GET'])

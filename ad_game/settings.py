@@ -43,7 +43,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt.token_blacklist',
     'rest_framework_swagger',
     'phonenumber_field',
-    ''
+    'django_celery_results',
     # --- My Apps --- #
     'accounts',
     'core',
@@ -153,6 +153,12 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+# With RabbitMQ
+CELERY_BROKER_URL = 'amqp://localhost'
+#With Redis
+#CELERY_BROKER_URL = 'redis://' + REDIS_HOST + ':' + REDIS_PORT + '/0'
+
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'  # 'http://myhost:port/media/'
