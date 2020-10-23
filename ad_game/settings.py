@@ -41,12 +41,14 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
-    'rest_framework_swagger',
     'phonenumber_field',
     'django_celery_results',
+    'channels',
+    'channels_redis',
     # --- My Apps --- #
     'accounts',
     'core',
+    'games',
 ]
 
 AUTH_USER_MODEL = 'accounts.User'
@@ -117,10 +119,22 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'ad_game.wsgi.application'
+#WSGI_APPLICATION = 'ad_game.wsgi.application'
+
 
 REDIS_HOST = 'localhost'
 REDIS_PORT = '6379'
+
+
+ASGI_APPLICATION = 'ad_game.routing.application'
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            'hosts': [('127.0.0.1', 6379)],
+        },
+    },
+}
 
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases

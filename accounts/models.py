@@ -53,7 +53,8 @@ def upload_location(instance, filename):
 
 
 def validate_image(image):
-    file_size = image.file.size
+    file_size = image.size
+    print(file_size)
     limit_kb = settings.AVATAR_LIMIT_KB
     if file_size > limit_kb * 1024:
         raise ValidationError(f'Max Size of file is {limit_kb} kb')
